@@ -28,10 +28,8 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
 
   const queryClient = useQueryClient()
 
-  const { mutateAsync: cancelOrderFn } = useMutation({
-    mutationFn: cancelOrder,
-    async onSuccess(_, { orderId }) {
-      const ordersListCache = queryClient.getQueriesData<GetOrdersResponse>({
+  function updateOrderStatusOnCache(orderId: string, status: string) {
+    const ordersListCache = queryClient.getQueriesData<GetOrdersResponse>({
         queryKey: ['orders'],
       })
 
@@ -44,13 +42,19 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
           ...cacheData,
           orders: cacheData.orders.map((order) => {
             if (order.orderId === orderId) {
-              return { ...order, status: 'canceled' }
+              return { ...order, status }
             }
 
             return order
           }),
         })
       })
+  }
+
+  const { mutateAsync: cancelOrderFn } = useMutation({
+    mutationFn: cancelOrder,
+    async onSuccess(_, { orderId }) {
+      
     },
   })
 
